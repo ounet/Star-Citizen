@@ -1,0 +1,4 @@
+ Carribou , Handle name Carribou ,  Civilian , Gardiens du Lys , Spectrum Identification (SID) LYS , Organization rank Recrue , Enlisted Dec 31, 2013 , Fluency French, English ,
+ Ounet , Handle name ounet ,  Civilian Defense Force Round 2 , Gardiens du Lys , Spectrum Identification (SID) LYS , Organization rank Recrue , Enlisted Jun 26, 2014 , Location Canada , Quebec , Fluency French ,
+ Flisher Alt , Handle name Flisher ,  Civilian , Gardiens du Lys , Spectrum Identification (SID) LYS , Organization rank Organisateur , Enlisted May 10, 2014 , Location Canada , Quebec , Fluency French ,
+ Jimothy-Jones , Handle name Jimothy-Jones ,  Civilian Defense Force Round 2 , Gardiens du Lys , Spectrum Identification (SID) LYS , Organization rank Recrue , Enlisted Oct 23, 2020 , Location Canada , Quebec , Fluency English, French ,
