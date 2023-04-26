@@ -5,7 +5,7 @@
 # avec le nom du Citizen afin de l'ajouter dans une blacklist.
 # 
 # l'ajout se fait seulement si le Citizen n'est pas deja dans la liste
-
+#
 ################################################################
 #class a recuperer
 ################################################################
