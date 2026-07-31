@@ -1,87 +1,138 @@
-﻿###################################################################################################################
-# Powershel script fait par Ounet pour la communaute du LYS 23 feb 2022
-#
-# Recueration de la page https://robertsspaceindustries.com/citizens/$name
-# avec le nom du Citizen afin de l'ajouter dans une blacklist.
-# 
-# l'ajout se fait seulement si le Citizen n'est pas deja dans la liste
-#
-################################################################
-#class a recuperer
-################################################################
+<#
+.SYNOPSIS
+    Recupere la fiche publique d'un Citizen sur robertsspaceindustries.com
+    et l'ajoute a une blacklist locale (CSV) si elle n'y est pas deja.
 
-#className                   R : entry
-#id                           : 
-#tagName                      : P
-#parentElement                : System.__ComObject
-#style                        : System.__ComObject
-#onhelp                       : 
-#onclick                      : 
-#ondblclick                   : 
-#onkeydown                    : 
-#onkeyup                      : 
-#onkeypress                   : 
-#onmouseout                   : 
-#onmouseover                  : 
-#onmousemove                  : 
-#onmousedown                  : 
-#onmouseup                    : 
-#document                     : mshtml.HTMLDocumentClass
-#title                        : 
-#language                     : 
-#onselectstart                : 
-#sourceIndex                  : 212
-#recordNumber                 : 
-#lang                         : 
-#offsetLeft                   : 0
-#offsetTop                    : 0
-#offsetWidth                  : 0
-#offsetHeight                 : 0
-#offsetParent                 : System.__ComObject
-#innerHTML                    : <A class="value data8" style="BACKGROUND-POSITION: -170px center" href="/orgs/LYS">Gardiens du Lys</A> 
-#innerText                    : Gardiens du Lys 
+.DESCRIPTION
+    Powershell script fait par Ounet pour la communaute du LYS - 23 fev 2022.
+    Compatible Windows PowerShell 5.1 et PowerShell 7+ (n'utilise plus le
+    moteur Internet Explorer / ParsedHtml, deprecie et absent de pwsh).
 
-#https://www.altaro.com/msp-dojo/web-scraping-tool-for-msps/#:~:text=%20Creating%20Web%20Scraping%20Tools%20for%20MSPs%20with,I%20want%20to%20be%20notified%20by...%20More%20
+.PARAMETER Name
+    Nom (ou handle) du Citizen a rechercher. Si omis, il est demande de
+    facon interactive. Le script propose ensuite de chainer les recherches.
 
-cls
-$env:USERPROFILE
-$outfile = "$env:USERPROFILE\Documents\Citizen_of_Star_Citizen.txt"
+.EXAMPLE
+    .\StarCitizen.ps1 -Name "SomeHandle"
+#>
 
-if (Test-Path -Path $outfile)
+[CmdletBinding()]
+param(
+    [Parameter(Position = 0)]
+    [string]$Name
+)
+
+$ErrorActionPreference = 'Stop'
+
+Clear-Host
+
+$outfile = Join-Path $env:USERPROFILE 'Documents\Citizen_of_Star_Citizen.csv'
+$fields  = 'Name', 'Handle Name', 'Role', 'Organisation', 'Spectrum Iden', 'Organisation Rank', 'Enlisted', 'Location', 'Fluency'
+
+function Get-CitizenEntries
 {
-    $FileList = Get-ChildItem -Path $outfile
-}
-else
-{
-    $info="Name,Handle Name,Role,Organisation,Spectrum Iden,Organisation Rank,Enlisted,Location,Fluency,"
-    Add-Content -Path $outfile -Value $info
-}
+    param([Parameter(Mandatory)][string]$HtmlContent)
 
-$name=$(write-host "Entre le nom du Citizen que vous cherchez : " -nonewline -foregroundColor green;read-host)
-$uri= "https://robertsspaceindustries.com/citizens/$name"
+    $found = [regex]::Matches(
+        $HtmlContent,
+        '(?is)<p[^>]*class="[^"]*\bentry\b[^"]*"[^>]*>(.*?)</p>'
+    )
 
-if ($WebResponse=Invoke-WebRequest -Uri $uri)
-{
-    #recherche de l'existance du citizen
-    if($Success = $FileList | Select-String -Pattern $name)
+    foreach ($item in $found)
     {
-        write-host "exist deja" -ForegroundColor red
-        Write-Host $Success
+        $text = $item.Groups[1].Value -replace '<[^>]+>', ''
+        $text = [System.Net.WebUtility]::HtmlDecode($text) -replace '\s+', ' '
+        $text.Trim()
     }
-    else
+}
+
+function Test-CitizenAlreadyBlacklisted
+{
+    param([Parameter(Mandatory)][string]$CitizenName)
+
+    if (-not (Test-Path -Path $outfile)) { return $null }
+
+    Import-Csv -Path $outfile | Where-Object {
+        $_.Name -eq $CitizenName -or $_.'Handle Name' -eq $CitizenName
+    }
+}
+
+while ($true)
+{
+    if (-not $Name)
     {
-        #$WebResponse.ParsedHtml.all.tags("a") | ForEach-Object -MemberName innertext
-        $WebResponse.ParsedHtml.all.tags("p") | Where{ $_.className -eq 'entry' } | ForEach-Object -MemberName innertext
-    
-        $test = ($WebResponse.ParsedHtml.all.tags("p") | Where{ $_.className -eq 'entry' } | ForEach-Object -MemberName innertext)
-        $count = $test.Count
-        $info =""
-        for ($i=0;$i -lt $count;$i++)
+        $Name = Read-Host -Prompt 'Entre le nom du Citizen que vous cherchez'
+    }
+
+    if ([string]::IsNullOrWhiteSpace($Name))
+    {
+        Write-Host 'Nom vide, arret.' -ForegroundColor Yellow
+        break
+    }
+
+    $encodedName = [uri]::EscapeDataString($Name)
+    $uri = "https://robertsspaceindustries.com/citizens/$encodedName"
+    $response = $null
+
+    try
+    {
+        $response = Invoke-WebRequest -Uri $uri -UseBasicParsing
+    }
+    catch
+    {
+        $statusCode = $null
+        if ($_.Exception.Response) { $statusCode = [int]$_.Exception.Response.StatusCode }
+
+        if ($statusCode -eq 404)
         {
-            #Write-Host $test[$i] -NoNewline -ForegroundColor Green
-            $info = $info + $test[$i] + ","
+            Write-Host "Citizen '$Name' introuvable (404)." -ForegroundColor Red
         }
-
-        Add-Content -Path $outfile -Value $info
+        else
+        {
+            Write-Host "Erreur lors de la recuperation de la page : $($_.Exception.Message)" -ForegroundColor Red
+        }
     }
+
+    if ($response)
+    {
+        $existing = Test-CitizenAlreadyBlacklisted -CitizenName $Name
+
+        if ($existing)
+        {
+            Write-Host 'Existe deja dans la blacklist :' -ForegroundColor Red
+            $existing | Format-Table -AutoSize
+        }
+        else
+        {
+            $entries = Get-CitizenEntries -HtmlContent $response.Content
+
+            if (-not $entries -or $entries.Count -eq 0)
+            {
+                Write-Host "Aucune information trouvee pour '$Name' (profil prive ou inexistant)." -ForegroundColor Yellow
+            }
+            else
+            {
+                $record = [ordered]@{}
+                for ($i = 0; $i -lt $fields.Count; $i++)
+                {
+                    $record[$fields[$i]] = if ($i -lt $entries.Count) { $entries[$i] } else { '' }
+                }
+
+                if (Test-Path -Path $outfile)
+                {
+                    [pscustomobject]$record | Export-Csv -Path $outfile -Append -NoTypeInformation -Encoding UTF8
+                }
+                else
+                {
+                    [pscustomobject]$record | Export-Csv -Path $outfile -NoTypeInformation -Encoding UTF8
+                }
+
+                Write-Host "Citizen '$Name' ajoute a la blacklist." -ForegroundColor Green
+            }
+        }
+    }
+
+    $Name = $null
+    $again = Read-Host -Prompt 'Chercher un autre Citizen ? (O/N)'
+    if ($again -notmatch '^[oOyY]') { break }
 }
