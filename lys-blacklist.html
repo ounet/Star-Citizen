@@ -1,0 +1,654 @@
+<meta charset="utf-8">
+<title>Registre LYS — Citizens Star Citizen</title>
+<style>
+  :root{
+    --bg:#0a0e13;
+    --surface:#121924;
+    --surface-2:#1a2432;
+    --border:#263241;
+    --text:#e7edf3;
+    --text-dim:#7e8fa0;
+    --accent:#45d6c4;
+    --accent-dim:#2a8577;
+    --danger:#e2574c;
+    --danger-dim:#4a2320;
+    --warn:#e0a542;
+    --focus:#7de9db;
+  }
+  @media (prefers-color-scheme: light){
+    :root{
+      --bg:#f2f5f7;
+      --surface:#ffffff;
+      --surface-2:#eaeff3;
+      --border:#d5dde3;
+      --text:#131b24;
+      --text-dim:#5c6b79;
+      --accent:#0d8f7d;
+      --accent-dim:#bfe9e2;
+      --danger:#c0392b;
+      --danger-dim:#f6d9d6;
+      --warn:#a66a00;
+      --focus:#0d8f7d;
+    }
+  }
+  :root[data-theme="dark"]{
+    --bg:#0a0e13; --surface:#121924; --surface-2:#1a2432; --border:#263241;
+    --text:#e7edf3; --text-dim:#7e8fa0; --accent:#45d6c4; --accent-dim:#2a8577;
+    --danger:#e2574c; --danger-dim:#4a2320; --warn:#e0a542; --focus:#7de9db;
+  }
+  :root[data-theme="light"]{
+    --bg:#f2f5f7; --surface:#ffffff; --surface-2:#eaeff3; --border:#d5dde3;
+    --text:#131b24; --text-dim:#5c6b79; --accent:#0d8f7d; --accent-dim:#bfe9e2;
+    --danger:#c0392b; --danger-dim:#f6d9d6; --warn:#a66a00; --focus:#0d8f7d;
+  }
+
+  *{box-sizing:border-box;}
+  body{
+    background:var(--bg);
+    color:var(--text);
+    font-family:-apple-system,BlinkMacSystemFont,"Segoe UI",system-ui,sans-serif;
+    font-size:15px;
+    line-height:1.55;
+    max-width:920px;
+    margin:0 auto;
+    padding:40px 20px 80px;
+  }
+  .mono{
+    font-family:ui-monospace,SFMono-Regular,Consolas,"Liberation Mono",Menlo,monospace;
+  }
+  h1,h2,h3{font-family:ui-monospace,SFMono-Regular,Consolas,"Liberation Mono",Menlo,monospace; font-weight:700; text-wrap:balance;}
+
+  /* ---- header ---- */
+  header{margin-bottom:32px;}
+  .eyebrow{
+    font-family:ui-monospace,SFMono-Regular,Consolas,monospace;
+    font-size:11px;
+    letter-spacing:.14em;
+    text-transform:uppercase;
+    color:var(--accent);
+    display:flex;
+    align-items:center;
+    gap:8px;
+    margin-bottom:10px;
+  }
+  .eyebrow::before{
+    content:"";
+    width:18px;height:1px;background:var(--accent);
+    display:inline-block;
+  }
+  h1{
+    font-size:26px;
+    letter-spacing:.02em;
+    text-transform:uppercase;
+    margin:0 0 8px;
+  }
+  header p{
+    color:var(--text-dim);
+    max-width:62ch;
+    margin:0;
+    font-size:14.5px;
+  }
+
+  /* ---- panel ---- */
+  .panel{
+    position:relative;
+    background:var(--surface);
+    border:1px solid var(--border);
+    padding:22px 24px;
+    margin-bottom:20px;
+  }
+  .panel::before{
+    content:"";
+    position:absolute; top:-1px; left:-1px;
+    width:14px; height:14px;
+    border-top:2px solid var(--accent);
+    border-left:2px solid var(--accent);
+  }
+  .panel::after{
+    content:"";
+    position:absolute; bottom:-1px; right:-1px;
+    width:14px; height:14px;
+    border-bottom:2px solid var(--accent);
+    border-right:2px solid var(--accent);
+  }
+  .panel-label{
+    font-family:ui-monospace,SFMono-Regular,Consolas,monospace;
+    font-size:11px;
+    letter-spacing:.12em;
+    text-transform:uppercase;
+    color:var(--text-dim);
+    margin:0 0 16px;
+    display:flex;
+    align-items:baseline;
+    justify-content:space-between;
+    gap:12px;
+  }
+  .panel-label .count{color:var(--accent);}
+
+  /* ---- form controls ---- */
+  label{
+    display:block;
+    font-size:12px;
+    letter-spacing:.04em;
+    color:var(--text-dim);
+    margin-bottom:6px;
+    text-transform:uppercase;
+    font-family:ui-monospace,SFMono-Regular,Consolas,monospace;
+  }
+  .field{margin-bottom:16px;}
+  .row{display:flex; gap:10px; align-items:flex-end; flex-wrap:wrap;}
+  .row .field{flex:1 1 220px; margin-bottom:0;}
+
+  input[type="text"], textarea{
+    width:100%;
+    background:var(--surface-2);
+    border:1px solid var(--border);
+    color:var(--text);
+    padding:10px 12px;
+    font-size:14px;
+    font-family:ui-monospace,SFMono-Regular,Consolas,monospace;
+    border-radius:2px;
+  }
+  textarea{
+    min-height:130px;
+    resize:vertical;
+    line-height:1.4;
+  }
+  input[type="text"]:focus, textarea:focus{
+    outline:none;
+    border-color:var(--focus);
+    box-shadow:0 0 0 1px var(--focus);
+  }
+  input[type="text"]::placeholder, textarea::placeholder{color:var(--text-dim); opacity:.7;}
+
+  button{
+    font-family:ui-monospace,SFMono-Regular,Consolas,monospace;
+    font-size:12.5px;
+    letter-spacing:.06em;
+    text-transform:uppercase;
+    padding:10px 16px;
+    border:1px solid var(--border);
+    background:var(--surface-2);
+    color:var(--text);
+    cursor:pointer;
+    border-radius:2px;
+    white-space:nowrap;
+    transition:border-color .12s ease, color .12s ease;
+  }
+  button:hover{border-color:var(--accent); color:var(--accent);}
+  button:focus-visible{outline:2px solid var(--focus); outline-offset:1px;}
+  button:disabled{opacity:.4; cursor:not-allowed;}
+  button:disabled:hover{border-color:var(--border); color:var(--text);}
+  button.primary{
+    background:var(--accent);
+    border-color:var(--accent);
+    color:#04211c;
+    font-weight:700;
+  }
+  button.primary:hover{color:#04211c; filter:brightness(1.08);}
+  button.danger:hover{border-color:var(--danger); color:var(--danger);}
+  button.ghost{background:transparent;}
+
+  .btn-row{display:flex; gap:10px; flex-wrap:wrap; margin-top:14px;}
+
+  .hint{font-size:13px; color:var(--text-dim); margin-top:8px;}
+  .hint a{color:var(--accent);}
+
+  /* ---- chips / status ---- */
+  .chip{
+    display:inline-flex;
+    align-items:center;
+    gap:6px;
+    padding:4px 10px;
+    border-radius:2px;
+    font-family:ui-monospace,SFMono-Regular,Consolas,monospace;
+    font-size:11.5px;
+    letter-spacing:.05em;
+    text-transform:uppercase;
+    border:1px solid var(--border);
+  }
+  .chip.ok{color:var(--accent); border-color:var(--accent-dim); background:color-mix(in srgb, var(--accent) 10%, transparent);}
+  .chip.warn{color:var(--warn); border-color:var(--warn); background:color-mix(in srgb, var(--warn) 12%, transparent);}
+  .chip.danger{color:var(--danger); border-color:var(--danger); background:color-mix(in srgb, var(--danger) 12%, transparent);}
+
+  /* ---- extracted preview ---- */
+  .empty-state{
+    color:var(--text-dim);
+    font-size:13.5px;
+    padding:18px 0;
+    text-align:center;
+    border:1px dashed var(--border);
+  }
+  dl.fields{
+    display:grid;
+    grid-template-columns:repeat(auto-fill, minmax(220px,1fr));
+    gap:14px 20px;
+    margin:0;
+  }
+  dl.fields dt{
+    font-size:10.5px;
+    letter-spacing:.1em;
+    text-transform:uppercase;
+    color:var(--text-dim);
+    font-family:ui-monospace,SFMono-Regular,Consolas,monospace;
+    margin-bottom:3px;
+  }
+  dl.fields dd{
+    margin:0;
+    font-size:14px;
+    font-family:ui-monospace,SFMono-Regular,Consolas,monospace;
+    word-break:break-word;
+  }
+  dl.fields dd.missing{color:var(--text-dim); font-style:italic;}
+
+  .extra-fields{
+    margin-top:16px;
+    padding-top:14px;
+    border-top:1px solid var(--border);
+    font-size:12.5px;
+    color:var(--text-dim);
+    font-family:ui-monospace,SFMono-Regular,Consolas,monospace;
+  }
+  .extra-fields span{display:block; margin-top:4px; color:var(--text);}
+
+  /* ---- table ---- */
+  .table-wrap{overflow-x:auto;}
+  table{width:100%; border-collapse:collapse; font-size:13px;}
+  th,td{
+    text-align:left;
+    padding:9px 10px;
+    border-bottom:1px solid var(--border);
+    font-family:ui-monospace,SFMono-Regular,Consolas,monospace;
+    white-space:nowrap;
+  }
+  th{
+    font-size:10.5px;
+    letter-spacing:.08em;
+    text-transform:uppercase;
+    color:var(--text-dim);
+    font-weight:600;
+  }
+  tbody tr:hover{background:var(--surface-2);}
+  td.name{color:var(--accent); font-weight:600;}
+  td.actions{text-align:right;}
+  td.actions button{padding:5px 10px; font-size:11px;}
+
+  footer{
+    margin-top:28px;
+    color:var(--text-dim);
+    font-size:12px;
+    text-align:center;
+  }
+
+  @media (prefers-reduced-motion: reduce){
+    *{transition:none !important;}
+  }
+</style>
+
+<header>
+  <div class="eyebrow">Outil communautaire · Gardiens du LYS</div>
+  <h1>Registre des Citizens</h1>
+  <p>Version navigateur du script <code class="mono">StarCitizen.ps1</code> : recherche un pseudo, colle la fiche du profil, et gère la blacklist directement depuis cette page. Les données restent uniquement dans ce navigateur.</p>
+</header>
+
+<section class="panel">
+  <p class="panel-label">01 · Repérer un profil</p>
+  <div class="row">
+    <div class="field">
+      <label for="handle-search">Pseudo / handle recherché</label>
+      <input type="text" id="handle-search" placeholder="ex. StormTrooperQC" autocomplete="off" spellcheck="false">
+    </div>
+    <button type="button" id="btn-open-profile" class="ghost">Ouvrir la fiche RSI ↗</button>
+  </div>
+  <p class="hint">Le site n'autorise pas ce type de page à récupérer une fiche automatiquement. Ouvre le profil, fais <strong>Ctrl+U</strong> (code source), sélectionne tout (<strong>Ctrl+A</strong>) puis copie (<strong>Ctrl+C</strong>) — colle le résultat ci-dessous.</p>
+</section>
+
+<section class="panel">
+  <p class="panel-label">02 · Coller le code source de la fiche</p>
+  <div class="field" style="margin-bottom:0;">
+    <textarea id="html-input" placeholder="Colle ici le code source complet de la page robertsspaceindustries.com/citizens/&lt;handle&gt;…" spellcheck="false"></textarea>
+  </div>
+  <div class="btn-row">
+    <button type="button" id="btn-parse" class="primary">Extraire les infos</button>
+    <button type="button" id="btn-clear-input" class="ghost">Vider</button>
+  </div>
+</section>
+
+<section class="panel">
+  <p class="panel-label">03 · Fiche extraite <span id="parse-status"></span></p>
+  <div id="preview-empty" class="empty-state">Aucune fiche analysée pour l'instant.</div>
+  <div id="preview-content" style="display:none;">
+    <dl class="fields" id="fields-grid"></dl>
+    <div class="extra-fields" id="extra-fields" style="display:none;"></div>
+    <div class="btn-row">
+      <button type="button" id="btn-add" class="primary">Ajouter à la blacklist</button>
+      <span id="add-status" class="chip" style="display:none;"></span>
+    </div>
+  </div>
+</section>
+
+<section class="panel">
+  <p class="panel-label">Blacklist LYS <span class="count" id="list-count">0 entrée</span></p>
+  <div class="row" style="margin-bottom:16px;">
+    <div class="field">
+      <label for="search-list">Filtrer</label>
+      <input type="text" id="search-list" placeholder="Nom, handle ou organisation…" autocomplete="off">
+    </div>
+  </div>
+  <div id="table-empty" class="empty-state">La blacklist est vide.</div>
+  <div class="table-wrap" id="table-wrap" style="display:none;">
+    <table>
+      <thead>
+        <tr>
+          <th>Name</th>
+          <th>Handle</th>
+          <th>Rôle</th>
+          <th>Organisation</th>
+          <th>Ajouté le</th>
+          <th></th>
+        </tr>
+      </thead>
+      <tbody id="list-body"></tbody>
+    </table>
+  </div>
+  <div class="btn-row">
+    <button type="button" id="btn-export" class="ghost">Télécharger en CSV</button>
+    <button type="button" id="btn-clear-all" class="ghost danger">Vider la blacklist</button>
+  </div>
+</section>
+
+<footer>Stocké localement dans ce navigateur (localStorage) — rien n'est envoyé à un serveur.</footer>
+
+<script>
+(function(){
+  "use strict";
+
+  var FIELD_LABELS = ["Name","Handle Name","Role","Organisation","Spectrum Iden","Organisation Rank","Enlisted","Location","Fluency"];
+  var STORAGE_KEY = "sc_lys_blacklist_v1";
+  var current = null; // last parsed record (not yet added)
+
+  var els = {
+    handleSearch: document.getElementById("handle-search"),
+    btnOpenProfile: document.getElementById("btn-open-profile"),
+    htmlInput: document.getElementById("html-input"),
+    btnParse: document.getElementById("btn-parse"),
+    btnClearInput: document.getElementById("btn-clear-input"),
+    parseStatus: document.getElementById("parse-status"),
+    previewEmpty: document.getElementById("preview-empty"),
+    previewContent: document.getElementById("preview-content"),
+    fieldsGrid: document.getElementById("fields-grid"),
+    extraFields: document.getElementById("extra-fields"),
+    btnAdd: document.getElementById("btn-add"),
+    addStatus: document.getElementById("add-status"),
+    listCount: document.getElementById("list-count"),
+    searchList: document.getElementById("search-list"),
+    tableEmpty: document.getElementById("table-empty"),
+    tableWrap: document.getElementById("table-wrap"),
+    listBody: document.getElementById("list-body"),
+    btnExport: document.getElementById("btn-export"),
+    btnClearAll: document.getElementById("btn-clear-all")
+  };
+
+  function escapeHtml(s){
+    return String(s).replace(/[&<>"']/g, function(c){
+      return {"&":"&amp;","<":"&lt;",">":"&gt;",'"':"&quot;","'":"&#39;"}[c];
+    });
+  }
+
+  function loadList(){
+    try{
+      var raw = localStorage.getItem(STORAGE_KEY);
+      return raw ? JSON.parse(raw) : [];
+    }catch(e){ return []; }
+  }
+  function saveList(list){
+    localStorage.setItem(STORAGE_KEY, JSON.stringify(list));
+  }
+
+  // ---- 01: open profile ----
+  els.btnOpenProfile.addEventListener("click", function(){
+    var handle = els.handleSearch.value.trim();
+    if(!handle){ els.handleSearch.focus(); return; }
+    window.open("https://robertsspaceindustries.com/citizens/" + encodeURIComponent(handle), "_blank", "noopener");
+  });
+
+  // ---- 02/03: parse ----
+  els.btnClearInput.addEventListener("click", function(){
+    els.htmlInput.value = "";
+    els.htmlInput.focus();
+  });
+
+  els.btnParse.addEventListener("click", function(){
+    var html = els.htmlInput.value;
+    els.parseStatus.textContent = "";
+    els.addStatus.style.display = "none";
+
+    if(!html.trim()){
+      showEmptyPreview("Colle d'abord le code source d'une fiche avant d'extraire.");
+      return;
+    }
+
+    var doc = new DOMParser().parseFromString(html, "text/html");
+    var nodes = doc.querySelectorAll("p.entry");
+    if(nodes.length === 0){
+      nodes = doc.querySelectorAll('[class*="entry"]');
+    }
+
+    var values = Array.prototype.map.call(nodes, function(n){
+      return (n.textContent || "").trim();
+    }).filter(function(v){ return v.length > 0; });
+
+    if(values.length === 0){
+      current = null;
+      showEmptyPreview("Aucun champ « .entry » trouvé — vérifie que le code source complet a bien été collé (et que la structure de la page RSI n'a pas changé depuis 2022).");
+      return;
+    }
+
+    var mapped = FIELD_LABELS.map(function(label, i){
+      return { label: label, value: values[i] !== undefined ? values[i] : null };
+    });
+    var extra = values.slice(FIELD_LABELS.length);
+
+    current = {
+      handleQuery: els.handleSearch.value.trim(),
+      fields: mapped,
+      extra: extra,
+      raw: values
+    };
+
+    renderPreview(mapped, extra, values.length);
+    refreshAddButton();
+  });
+
+  function showEmptyPreview(message){
+    els.previewEmpty.textContent = message;
+    els.previewEmpty.style.display = "block";
+    els.previewContent.style.display = "none";
+    els.parseStatus.innerHTML = '<span class="chip danger">0 champ</span>';
+  }
+
+  function renderPreview(mapped, extra, total){
+    els.previewEmpty.style.display = "none";
+    els.previewContent.style.display = "block";
+
+    var statusChip = total === FIELD_LABELS.length
+      ? '<span class="chip ok">' + total + ' champs</span>'
+      : '<span class="chip warn">' + total + ' champs — structure inattendue</span>';
+    els.parseStatus.innerHTML = statusChip;
+
+    els.fieldsGrid.innerHTML = mapped.map(function(f){
+      var val = f.value === null
+        ? '<dd class="missing">— absent —</dd>'
+        : '<dd>' + escapeHtml(f.value) + '</dd>';
+      return '<dt>' + escapeHtml(f.label) + '</dt>' + val;
+    }).join("");
+
+    if(extra.length > 0){
+      els.extraFields.style.display = "block";
+      els.extraFields.innerHTML = "Champs supplémentaires détectés (au-delà des " + FIELD_LABELS.length + " attendus) :" +
+        extra.map(function(v){ return '<span>' + escapeHtml(v) + '</span>'; }).join("");
+    } else {
+      els.extraFields.style.display = "none";
+      els.extraFields.innerHTML = "";
+    }
+  }
+
+  function identifierFor(record){
+    var byHandle = record.fields[1] && record.fields[1].value;
+    var byName = record.fields[0] && record.fields[0].value;
+    return byHandle || record.handleQuery || byName || "";
+  }
+
+  function refreshAddButton(){
+    if(!current){ return; }
+    var id = identifierFor(current).toLowerCase();
+    var list = loadList();
+    var dupe = list.some(function(r){
+      return (r.identifier || "").toLowerCase() === id && id !== "";
+    });
+    if(dupe){
+      els.btnAdd.disabled = true;
+      els.addStatus.style.display = "inline-flex";
+      els.addStatus.className = "chip danger";
+      els.addStatus.textContent = "Déjà dans la blacklist";
+    } else {
+      els.btnAdd.disabled = false;
+      els.addStatus.style.display = "none";
+    }
+  }
+
+  els.btnAdd.addEventListener("click", function(){
+    if(!current) return;
+    var id = identifierFor(current);
+    var list = loadList();
+    list.unshift({
+      identifier: id,
+      name: current.fields[0] && current.fields[0].value || "",
+      handle: current.fields[1] && current.fields[1].value || "",
+      role: current.fields[2] && current.fields[2].value || "",
+      org: current.fields[3] && current.fields[3].value || "",
+      spectrumId: current.fields[4] && current.fields[4].value || "",
+      orgRank: current.fields[5] && current.fields[5].value || "",
+      enlisted: current.fields[6] && current.fields[6].value || "",
+      location: current.fields[7] && current.fields[7].value || "",
+      fluency: current.fields[8] && current.fields[8].value || "",
+      raw: current.raw,
+      addedAt: new Date().toISOString()
+    });
+    saveList(list);
+    renderList();
+    refreshAddButton();
+    els.addStatus.style.display = "inline-flex";
+    els.addStatus.className = "chip ok";
+    els.addStatus.textContent = "Ajouté";
+  });
+
+  // ---- blacklist table ----
+  function fmtDate(iso){
+    try{
+      var d = new Date(iso);
+      return d.toLocaleDateString("fr-CA") + " " + d.toLocaleTimeString("fr-CA", {hour:"2-digit", minute:"2-digit"});
+    }catch(e){ return iso; }
+  }
+
+  function renderList(){
+    var list = loadList();
+    var filter = els.searchList.value.trim().toLowerCase();
+    var filtered = filter ? list.filter(function(r){
+      return (r.name + " " + r.handle + " " + r.org).toLowerCase().indexOf(filter) !== -1;
+    }) : list;
+
+    els.listCount.textContent = list.length + (list.length === 1 ? " entrée" : " entrées");
+
+    if(list.length === 0){
+      els.tableEmpty.style.display = "block";
+      els.tableEmpty.textContent = "La blacklist est vide.";
+      els.tableWrap.style.display = "none";
+      return;
+    }
+    if(filtered.length === 0){
+      els.tableEmpty.style.display = "block";
+      els.tableEmpty.textContent = "Aucune entrée ne correspond au filtre.";
+      els.tableWrap.style.display = "none";
+      return;
+    }
+
+    els.tableEmpty.style.display = "none";
+    els.tableWrap.style.display = "block";
+    els.listBody.innerHTML = filtered.map(function(r, idx){
+      var realIdx = list.indexOf(r);
+      return "<tr>" +
+        '<td class="name">' + escapeHtml(r.name || "—") + "</td>" +
+        "<td>" + escapeHtml(r.handle || "—") + "</td>" +
+        "<td>" + escapeHtml(r.role || "—") + "</td>" +
+        "<td>" + escapeHtml(r.org || "—") + "</td>" +
+        "<td>" + escapeHtml(fmtDate(r.addedAt)) + "</td>" +
+        '<td class="actions"><button type="button" class="ghost danger" data-remove="' + realIdx + '">Retirer</button></td>' +
+        "</tr>";
+    }).join("");
+  }
+
+  els.searchList.addEventListener("input", renderList);
+
+  els.listBody.addEventListener("click", function(e){
+    var btn = e.target.closest("[data-remove]");
+    if(!btn) return;
+    var idx = parseInt(btn.getAttribute("data-remove"), 10);
+    var list = loadList();
+    list.splice(idx, 1);
+    saveList(list);
+    renderList();
+    refreshAddButton();
+  });
+
+  // ---- export / clear ----
+  function csvEscape(v){
+    v = v == null ? "" : String(v);
+    return v.indexOf(",") !== -1 || v.indexOf('"') !== -1
+      ? '"' + v.replace(/"/g, '""') + '"'
+      : v;
+  }
+
+  els.btnExport.addEventListener("click", function(){
+    var list = loadList();
+    var header = "Name,Handle Name,Role,Organisation,Spectrum Iden,Organisation Rank,Enlisted,Location,Fluency,";
+    var lines = [header];
+    list.forEach(function(r){
+      lines.push([r.name, r.handle, r.role, r.org, r.spectrumId, r.orgRank, r.enlisted, r.location, r.fluency, ""]
+        .map(csvEscape).join(","));
+    });
+    var csv = lines.join("\r\n");
+
+    if(window.claude && window.claude.downloads){
+      window.claude.downloads.save({ filename: "Citizen_of_Star_Citizen.csv", data: csv }).catch(function(){});
+    } else {
+      var blob = new Blob([csv], {type:"text/csv"});
+      var url = URL.createObjectURL(blob);
+      var a = document.createElement("a");
+      a.href = url; a.download = "Citizen_of_Star_Citizen.csv";
+      document.body.appendChild(a); a.click(); document.body.removeChild(a);
+      URL.revokeObjectURL(url);
+    }
+  });
+
+  var clearArmed = false;
+  els.btnClearAll.addEventListener("click", function(){
+    if(!clearArmed){
+      clearArmed = true;
+      els.btnClearAll.textContent = "Confirmer la suppression ?";
+      setTimeout(function(){
+        clearArmed = false;
+        els.btnClearAll.textContent = "Vider la blacklist";
+      }, 3000);
+      return;
+    }
+    clearArmed = false;
+    els.btnClearAll.textContent = "Vider la blacklist";
+    saveList([]);
+    renderList();
+    refreshAddButton();
+  });
+
+  renderList();
+})();
+</script>
